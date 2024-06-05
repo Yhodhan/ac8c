@@ -1,5 +1,5 @@
 #include <memory>
-#include "chip.h"
+#include "chip/chip.h"
 
 int main() {
   std::unique_ptr<Chip> chip (new Chip());

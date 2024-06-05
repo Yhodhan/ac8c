@@ -1,8 +1,8 @@
 .PHONY: compile format run
 
 CXX = g++ -std=c++20
-OBJ = -o chip8 $(shell find . -iname '*.h' -o -iname '*.cpp')
-FLAGS = -g -Wall -Wformat -Werror -Wextra -Wuninitialized -Winit-self -Wmaybe-uninitialized
+OBJ = -o ac8c $(shell find . -iname '*.h' -o -iname '*.cpp')
+FLAGS = -g -Wall -Wformat -Werror -Wextra -Wuninitialized -Winit-self -Wmaybe-uninitialized -O1 
 
 compile:
 	$(CXX) $(FLAGS) $(OBJ) 
@@ -11,4 +11,4 @@ format:
 	find . -iname '*.h' -o -iname '*.cpp' | xargs clang-format -style=llvm -i 
 
 run: 
-	./chip8
+	./ac8c

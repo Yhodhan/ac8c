@@ -7,6 +7,9 @@
 
 typedef uint8_t byte;
 
+// -----------------
+//  CHIP8 EMULATOR 
+// -----------------
 class Chip {
 public:
   Chip();

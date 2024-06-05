@@ -1,7 +1,6 @@
 #include "chip.h"
 
 Chip::Chip(): memory(std::vector<byte> (0x1000, 0x1)) {} 
-
 Chip::~Chip() {}
 
 void Chip::print_mem() {
