@@ -75,4 +75,110 @@ void Chip::cycle() {
 void Chip::op_00e0() {
   for (unsigned i = 0; i < screen.size(); i++)
     fill(screen[i].begin(), screen[i].end(), 0);
+  pc += OP_OFFSET;
+}
+
+// RET - return from a subroutine
+void Chip::op_00ee() {
+  sp -= 1;
+  pc = stack[sp];
+}
+
+// JP - jump to location nnn
+void Chip::op_1nnn(word addr) { pc = addr; }
+
+// CALL - call subroutine at nnn
+void Chip::op_2nnn(word addr) {
+  stack[sp] = pc;
+  sp += 1;
+  pc = addr;
+}
+
+// SE - skip next instruction if vx = kk
+void Chip::op_3xkk(byte kk, byte x) {
+  if (registers[x] == kk)
+    pc += 2 * OP_OFFSET;
+  else
+    pc += OP_OFFSET;
+}
+
+// SNE - skip next instruction if vx != kk
+void Chip::op_4xkk(byte kk, byte x) {
+  if (registers[x] != kk)
+    pc += 2 * OP_OFFSET;
+  else
+    pc += OP_OFFSET;
+}
+
+// SE - skip next instruction if vx = vy
+void Chip::op_5xy0(byte x, byte y) {
+  if (registers[x] == registers[y])
+    pc += 2 * OP_OFFSET;
+  else
+    pc += OP_OFFSET;
+}
+
+// LD - set vx = kk
+void Chip::op_6xkk(byte kk, byte x) {
+  registers[x] = kk;
+  pc += OP_OFFSET;
+}
+
+// ADD - set vx = vx + kk
+void Chip::op_7xkk(byte kk, byte x) {
+  registers[x] = registers [x] + kk;
+  pc += OP_OFFSET;
+}
+
+// LD - set vx = vy
+void Chip::op_8xy0(byte x, byte y) {
+  registers[x] = registers[y];
+  pc += OP_OFFSET;
+}
+
+// OR - set vx = vx or vy
+void Chip::op_8xy1(byte x, byte y) {
+  registers[x] = registers[x] | registers[y];
+  pc += OP_OFFSET;
+}
+
+// AND - set vx = vx and x vy
+void Chip::op_8xy2(byte x, byte y) {
+  registers[x] = registers[x] & registers[y];
+  pc += OP_OFFSET;
+}
+
+// XOR - set vx = vx xor vy
+void Chip::op_8xy3(byte x, byte y) {
+  registers[x] = registers[x] ^ registers[y];
+  pc += OP_OFFSET;
+}
+
+// ADD - set vx = vx + vy, set vf = carry
+void Chip::op_8xy4(byte x, byte y) {
+  word sum = (word) registers[x] + (word) registers[y];
+  registers[0x0f] = (sum > 255);
+  registers[x] = (byte) sum;
+  pc += OP_OFFSET;
+}
+
+// SUB - set vx = vx - vy, set vf = not borrow
+void Chip::op_8xy5(byte x, byte y) {
+  registers[0x0f] = (registers[x] > registers[y]);
+  registers[x] = registers[x] - registers[y];
+  pc += OP_OFFSET;
+}
+
+// SHR - set vx = vx >> 1;
+void Chip::op_8xy6(byte x, byte y) {
+  registers[0x0f] = (registers[x] & 0x01);
+  registers[x] = registers[x] >> 1;
+  pc += OP_OFFSET;
+}
+
+// SUBN - set vx = vx - vy, set vf = not borrow
+void Chip::op_8xy7(byte x, byte y) {
+  registers[0x0f] = (registers[y] > registers[x]);
+  registers[x] = registers[y] - registers[x];
+  pc += OP_OFFSET;
 }

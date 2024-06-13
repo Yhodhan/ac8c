@@ -24,6 +24,21 @@ public:
   void cycle();
   void op_00e0();
   void op_00ee();
+  void op_1nnn(word addr);
+  void op_2nnn(word addr);
+  void op_3xkk(byte kk, byte x);
+  void op_4xkk(byte kk, byte x);
+  void op_5xy0(byte x, byte y);
+  void op_6xkk(byte kk, byte x);
+  void op_7xkk(byte kk, byte x);
+  void op_8xy0(byte x, byte y);
+  void op_8xy1(byte x, byte y);
+  void op_8xy2(byte x, byte y);
+  void op_8xy3(byte x, byte y);
+  void op_8xy4(byte x, byte y);
+  void op_8xy5(byte x, byte y);
+  void op_8xy6(byte x, byte y);
+  void op_8xy7(byte x, byte y);
 
 private:
   /*
