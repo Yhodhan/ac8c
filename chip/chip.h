@@ -19,7 +19,11 @@ public:
   Chip();
   ~Chip();
 
-  void print_mem();
+  word fetch();
+  void execute(word opcode);
+  void cycle();
+  void op_00e0();
+  void op_00ee();
 
 private:
   /*

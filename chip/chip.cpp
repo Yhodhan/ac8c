@@ -1,5 +1,8 @@
 #include "chip.h"
 
+//
+static const word OP_OFFSET = 2;
+
 // Sprites of Chip 8
 std::vector<byte> FONT_SET = {
     0xF0, 0x90, 0x90, 0x90, 0xF0, 0x20, 0x60, 0x20, 0x20, 0x70, 0xF0, 0x10,
@@ -22,9 +25,54 @@ Chip::Chip()
 
 Chip::~Chip() {}
 
-void Chip::print_mem() {
-  for (byte i : this->memory)
-    std::cout << i << " ";
+// Execution functions
 
-  std::cout << std::endl;
+word Chip::fetch() {
+  word addr = pc;
+  return ((memory[addr]) << 8 | memory[addr + 1]);
+}
+
+void Chip::execute(word opcode) {
+
+  /*
+    ============================
+           opcode nibbles
+    ============================
+      nib1 | nib2 | nib3 | nib4
+      xxxx | xxxx | xxxx | xxxx
+    ============================
+  */
+  byte nib4 = ((opcode & 0x000f));
+  byte nib3 = ((opcode & 0x00f0) >> 4);
+  byte nib2 = ((opcode & 0x0f00) >> 8);
+  byte nib1 = ((opcode & 0xf000) >> 12);
+
+  // variables
+  byte x = nib2;
+  byte y = nib3;
+  byte n = nib4;
+  byte kk = (opcode & 0x00ff);
+  word nnn = (opcode & 0x0fff);
+
+  if (nib1 == 0x0 and nib2 == 0x0 and nib3 == 0xe and nib4 == 0x0)
+    op_00e0();
+  else if (nib1 == 0x0 and nib2 == 0x0 and nib3 == 0xe and nib4 == 0xe)
+    op_00ee();
+  else
+    pc += OP_OFFSET;
+}
+
+void Chip::cycle() {
+  while (1) {
+    word opcode = fetch();
+    execute(opcode);
+  }
+}
+
+// Instructions
+
+// CLS - clear display
+void Chip::op_00e0() {
+  for (unsigned i = 0; i < screen.size(); i++)
+    fill(screen[i].begin(), screen[i].end(), 0);
 }
