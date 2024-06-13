@@ -11,7 +11,7 @@ typedef uint16_t word;
 
 /*
  =================
-   CHIP8 EMULATOR 
+   CHIP8 EMULATOR
  =================
 */
 class Chip {
@@ -28,9 +28,11 @@ private:
     - i: Instruction register.
     - pc: Program counter.
     - sp: Stack pointer.
-    - Stack: It has up to 16 addresses of space, Chip8 only allows up to 16 sub routines calls.
+    - Stack: It has up to 16 addresses of space, Chip8 only allows up to 16 sub
+  routines calls.
     - Memory: From 0x000 to 0x01FF Program / Data Space.
-    - Registers: Chip8 has 16 8 bits registers, 0xF register usually is used to store flags.
+    - Registers: Chip8 has 16 8 bits registers, 0xF register usually is used to
+  store flags.
     - Keyboard: It has 16-key hexadecimal layout.
   ======================================================
   */
@@ -40,10 +42,10 @@ private:
   byte sp;
   word i;
   word pc;
-  std::vector<word> stack; 
+  std::vector<word> stack;
   std::vector<byte> memory;
-  std::vector<byte> registers; 
-  std::vector<bool> keyboard; 
+  std::vector<byte> registers;
+  std::vector<bool> keyboard;
   std::vector<std::vector<byte>> screen;
 };
 
