@@ -1,7 +1,9 @@
 #include "chip.h"
+#include <random>
 
-//
 static const word OP_OFFSET = 2;
+static const byte SCREEN_WIDTH = 64;
+static const byte SCREEN_HEIGHT = 32;
 
 // Sprites of Chip 8
 std::vector<byte> FONT_SET = {
@@ -63,13 +65,15 @@ void Chip::execute(word opcode) {
 }
 
 void Chip::cycle() {
-  while (1) {
+  loop {
     word opcode = fetch();
     execute(opcode);
   }
 }
 
-// Instructions
+// ==============
+//  Instructions
+// ==============
 
 // CLS - clear display
 void Chip::op_00e0() {
@@ -126,7 +130,7 @@ void Chip::op_6xkk(byte kk, byte x) {
 
 // ADD - set vx = vx + kk
 void Chip::op_7xkk(byte kk, byte x) {
-  registers[x] = registers [x] + kk;
+  registers[x] = registers[x] + kk;
   pc += OP_OFFSET;
 }
 
@@ -156,9 +160,9 @@ void Chip::op_8xy3(byte x, byte y) {
 
 // ADD - set vx = vx + vy, set vf = carry
 void Chip::op_8xy4(byte x, byte y) {
-  word sum = (word) registers[x] + (word) registers[y];
+  word sum = (word)registers[x] + (word)registers[y];
   registers[0x0f] = (sum > 255);
-  registers[x] = (byte) sum;
+  registers[x] = (byte)sum;
   pc += OP_OFFSET;
 }
 
@@ -169,8 +173,8 @@ void Chip::op_8xy5(byte x, byte y) {
   pc += OP_OFFSET;
 }
 
-// SHR - set vx = vx >> 1;
-void Chip::op_8xy6(byte x, byte y) {
+// SHR - set vx = vx >> 1
+void Chip::op_8xy6(byte x) {
   registers[0x0f] = (registers[x] & 0x01);
   registers[x] = registers[x] >> 1;
   pc += OP_OFFSET;
@@ -180,5 +184,69 @@ void Chip::op_8xy6(byte x, byte y) {
 void Chip::op_8xy7(byte x, byte y) {
   registers[0x0f] = (registers[y] > registers[x]);
   registers[x] = registers[y] - registers[x];
+  pc += OP_OFFSET;
+}
+
+// SHL - set vx = vx << 1
+void Chip::op_8xye(byte x) {
+  registers[0x0f] = ((registers[x] & 0x80) >> 7);
+  registers[x] = registers[x] << 1;
+  pc += OP_OFFSET;
+}
+
+// SNE - skip next intruction if vx != vy
+void Chip::op_9xy0(byte x, byte y) {
+  if (registers[x] != registers[y])
+    pc += 2 * OP_OFFSET;
+  else
+    pc += OP_OFFSET;
+}
+
+// Annn - set I = nnn
+void Chip::op_annn(word addr) {
+  i = addr;
+  pc += OP_OFFSET;
+}
+
+// Bnnn - set I = nnn
+void Chip::op_bnnn(word addr) {
+  pc = (word)registers[0x0] + addr;
+  pc += OP_OFFSET;
+}
+
+// RND - set vx = random byte AND kk;
+void Chip::op_cxkk(byte x, byte kk) {
+  std::random_device dev;
+  std::mt19937 rng(dev());
+  std::uniform_int_distribution<std::mt19937::result_type> dist(0, 255);
+  auto rand = dist(rng);
+
+  registers[x] = rand & kk;
+  pc += OP_OFFSET;
+}
+
+// DRW -Display n-byte sprite starting at memory location I at (Vx, Vy), set VF
+// = collision.
+/*
+  Steps:
+  - read n bytes from memory, starting at address I.
+  - for each bit of the sprite check if modifies the pixel.
+  - store the bit in the screen.
+*/
+void Chip::op_dxyn(byte x, byte y, byte n) {
+  registers[0x0f] = 0;
+  for (unsigned j = this->i; j <= n; j++) {
+    // column y
+    byte sprite = memory[j];
+    byte cy = (registers[y] + j) % SCREEN_HEIGHT;
+    for (unsigned bit = 0; bit < 8; bit++) {
+      // line x
+      byte cx = (registers[x] + j) % SCREEN_WIDTH;
+      byte pixel = (sprite >> (7 - bit));
+      // check if changes the pixels in the screen
+      registers[0x0f] |= pixel & screen[cy][cx];
+      screen[cy][cx] = pixel ^ screen[cy][cx];
+    }
+  }
   pc += OP_OFFSET;
 }
