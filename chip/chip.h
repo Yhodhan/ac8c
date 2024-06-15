@@ -1,14 +1,13 @@
 #ifndef CHIP_H
 #define CHIP_H
 
+#include "decoder/decoder.h"
+#include "opcode/opcode.h"
 #include <cstdint>
 #include <iostream>
 #include <ostream>
 #include <random>
 #include <vector>
-
-typedef uint8_t byte;
-typedef uint16_t word;
 
 #define loop                                                                   \
   for (;;)                                                                     \
@@ -24,7 +23,7 @@ public:
   Chip();
   ~Chip();
   word fetch();
-  void execute(word opcode);
+  void execute(Opcode opcode);
   void cycle();
   void op_00e0();
   void op_00ee();
@@ -63,21 +62,21 @@ public:
 
 private:
   /*
-  ===================================================================
-    - dt: Time registers.
-    - st: Time registers.
-    - sp: Time registers.
-    - delay_timer: value of the delay.
-    - sound_timer: value of the sound.
-    - i: Instruction register.
-    - pc: Program counter.
-    - sp: Stack pointer.
-    - stack: Chip8 only allows up to 16 subroutines calls.
-    - memory: From 0x000 to 0x01FF is Program/Data Space.
-    - registers: Chip8 has 16 8-bits registers, 0xF is flag register.
-    - keyboard: It has 16-key hexadecimal layout.
-  ===================================================================
-*/
+    ===================================================================
+      - dt: Time registers.
+      - st: Time registers.
+      - sp: Time registers.
+      - delay_timer: value of the delay.
+      - sound_timer: value of the sound.
+      - i: Instruction register.
+      - pc: Program counter.
+      - sp: Stack pointer.
+      - stack: Chip8 only allows up to 16 subroutines calls.
+      - memory: From 0x000 to 0x01FF is Program/Data Space.
+      - registers: Chip8 has 16 8-bits registers, 0xF is flag register.
+      - keyboard: It has 16-key hexadecimal layout.
+    ===================================================================
+  */
   byte dt;
   byte st;
   byte sp;
@@ -90,6 +89,8 @@ private:
   byte registers[16];
   bool keyboard[16];
   bool screen_drawned;
+  bool key_pressed;
+  byte key_pres_reg;
   std::vector<std::vector<byte>> screen;
 };
 

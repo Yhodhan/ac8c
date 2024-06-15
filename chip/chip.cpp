@@ -1,4 +1,5 @@
 #include "chip.h"
+#include "decoder/decoder.h"
 
 static const word OP_OFFSET = 2;
 static const byte SCREEN_WIDTH = 64;
@@ -18,6 +19,7 @@ unsigned char FONT_SET[80] = {
 Chip::Chip()
     : dt(0), st(0), sp(0), delay_timer(0), sound_timer(0), i(0), pc(0x0200),
       stack{0}, memory{0}, registers{0}, keyboard{false}, screen_drawned(false),
+      key_pressed(false), key_pres_reg(0),
       screen(std::vector<std::vector<byte>>(64, std::vector<byte>(32, 0))) {
   for (unsigned i = 0; i < 80; i++)
     memory[i] = FONT_SET[i];
@@ -29,44 +31,69 @@ Chip::~Chip() {}
 //  Execution functions
 // =====================
 
-word Chip::fetch() {
-  word addr = pc;
-  return ((memory[addr]) << 8 | memory[addr + 1]);
-}
+word Chip::fetch() { return ((memory[pc]) << 8 | memory[pc + 1]); }
 
-void Chip::execute(word opcode) {
+void Chip::execute(Opcode opcode) {
 
   /*
-    ============================
-           opcode nibbles
-    ============================
-      nib1 | nib2 | nib3 | nib4
-      xxxx | xxxx | xxxx | xxxx
-    ============================
+    =============================
+          opcode composition
+    =============================
+           |      address       |
+           |      |    byte     |
+      high |   x  |   y  | low  |
+      xxxx | xxxx | xxxx | xxxx |
+    =============================
   */
-  byte nib4 = ((opcode & 0x000f));
-  byte nib3 = ((opcode & 0x00f0) >> 4);
-  byte nib2 = ((opcode & 0x0f00) >> 8);
-  byte nib1 = ((opcode & 0xf000) >> 12);
+  byte x = opcode.x();
+  byte y = opcode.y();
+  byte n = opcode.low();
+  byte kk = opcode.Byte();
+  word nnn = opcode.address();
 
-  // variables
-  byte x = nib2;
-  byte y = nib3;
-  byte n = nib4;
-  byte kk = (opcode & 0x00ff);
-  word nnn = (opcode & 0x0fff);
+  Instruction instruction = decode(opcode);
 
-  if (nib1 == 0x0 and nib2 == 0x0 and nib3 == 0xe and nib4 == 0x0)
-    op_00e0();
-  else if (nib1 == 0x0 and nib2 == 0x0 and nib3 == 0xe and nib4 == 0xe)
-    op_00ee();
-  else
-    pc += OP_OFFSET;
+  switch (instruction) {
+    case Instruction::Op_00e0: op_00e0(); break;
+    case Instruction::Op_1nnn: op_1nnn(nnn); break;
+    case Instruction::Op_2nnn: op_2nnn(nnn); break;
+    case Instruction::Op_3xkk: op_3xkk(kk, x); break;
+    case Instruction::Op_4xkk: op_4xkk(kk, x); break;
+    case Instruction::Op_5xy0: op_5xy0(x, y); break;
+    case Instruction::Op_6xkk: op_6xkk(kk, x); break;
+    case Instruction::Op_7xkk: op_7xkk(kk, x); break;
+    case Instruction::Op_8xy0: op_8xy0(x, y); break;
+    case Instruction::Op_8xy1: op_8xy2(x, y); break;
+    case Instruction::Op_8xy2: op_8xy2(x, y); break;
+    case Instruction::Op_8xy3: op_8xy3(x, y); break;
+    case Instruction::Op_8xy4: op_8xy4(x, y); break;
+    case Instruction::Op_8xy5: op_8xy5(x, y); break;
+    case Instruction::Op_8xy6: op_8xy6(x); break;
+    case Instruction::Op_8xy7: op_8xy7(x, y); break;
+    case Instruction::Op_8xye: op_8xye(x); break;
+    case Instruction::Op_9xy0: op_9xy0(x, y); break;
+    case Instruction::Op_annn: op_annn(nnn); break;
+    case Instruction::Op_bnnn: op_bnnn(nnn); break;
+    case Instruction::Op_cxkk: op_cxkk(x, kk); break;
+    case Instruction::Op_dxyn: op_dxyn(x, y, n); break;
+    case Instruction::Op_ex9e: op_ex9e(x); break;
+    case Instruction::Op_exa1: op_exa1(x); break;
+    case Instruction::Op_fx07: op_fx07(x); break;
+    case Instruction::Op_fx0a: op_fx0a(x); break;
+    case Instruction::Op_fx15: op_fx15(x); break;
+    case Instruction::Op_fx18: op_fx18(x); break;
+    case Instruction::Op_fx1e: op_fx1e(x); break;
+    case Instruction::Op_fx29: op_fx29(x); break;
+    case Instruction::Op_fx33: op_fx33(x); break;
+    case Instruction::Op_fx55: op_fx55(x); break;
+    case Instruction::Op_fx65: op_fx65(x); break;
+    default: pc += OP_OFFSET;
+  }
 }
 
 void Chip::cycle() {
   loop {
-    word opcode = fetch();
+    Opcode opcode = fetch();
     execute(opcode);
   }
 }
@@ -277,10 +304,12 @@ void Chip::op_fx07(byte x) {
 }
 
 // LD - wait for a key press, store the value of the key in vx.
-// void Chip::op_fx0a(byte x) {
-//   while (!key_pressed) {}
-//   regis
-// }
+// FIX: this function is probably broken
+void Chip::op_fx0a(byte x) {
+  key_pressed = true;
+  key_pres_reg = x;
+  pc += OP_OFFSET;
+}
 
 // LD - set delay timer = vx.
 void Chip::op_fx15(byte x) {
