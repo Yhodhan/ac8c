@@ -1,5 +1,4 @@
 #include "chip.h"
-#include <random>
 
 static const word OP_OFFSET = 2;
 static const byte SCREEN_WIDTH = 64;
@@ -17,9 +16,10 @@ std::vector<byte> FONT_SET = {
 };
 
 Chip::Chip()
-    : rt(0), rd(0), sp(0), i(0), pc(0x0200), stack(std::vector<word>(16, 0)),
-      memory(std::vector<byte>(0x1000, 0)), registers(std::vector<byte>(16, 0)),
-      keyboard(std::vector<bool>(16, 0)),
+    : dt(0), st(0), sp(0), delay_timer(0), sound_timer(0), i(0), pc(0x0200),
+      stack(std::vector<word>(16, 0)), memory(std::vector<byte>(0x1000, 0)),
+      registers(std::vector<byte>(16, 0)), keyboard(std::vector<bool>(16, 0)),
+      screen_drawned(false),
       screen(std::vector<std::vector<byte>>(64, std::vector<byte>(32, 0))) {
   for (unsigned i = 0; i < FONT_SET.size(); i++)
     memory[i] = FONT_SET[i];
@@ -248,5 +248,92 @@ void Chip::op_dxyn(byte x, byte y, byte n) {
       screen[cy][cx] = pixel ^ screen[cy][cx];
     }
   }
+  screen_drawned = true;
+  pc += OP_OFFSET;
+}
+
+// SKP - skip next instruction if key with the value of vx is pressed.
+void Chip::op_ex9e(byte x) {
+  byte key = registers[x];
+  if (keyboard[key])
+    pc += 2 * OP_OFFSET;
+  else
+    pc += OP_OFFSET;
+}
+
+// SKNP - skip next instruction if key with the value of vx is not pressed.
+void Chip::op_exa1(byte x) {
+  byte key = registers[x];
+  if (!keyboard[key])
+    pc += 2 * OP_OFFSET;
+  else
+    pc += OP_OFFSET;
+}
+
+// LD - set vx = delay timer.
+void Chip::op_fx07(byte x) {
+  registers[x] = delay_timer;
+  pc += OP_OFFSET;
+}
+
+// LD - wait for a key press, store the value of the key in vx.
+// void Chip::op_fx0a(byte x) {
+//   while (!key_pressed) {}
+//   regis
+// }
+
+// LD - set delay timer = vx.
+void Chip::op_fx15(byte x) {
+  delay_timer = registers[x];
+  pc += OP_OFFSET;
+}
+
+// LD - set delay timer = vx.
+void Chip::op_fx18(byte x) {
+  sound_timer = registers[x];
+  pc += OP_OFFSET;
+}
+
+// ADD - set i = i + vx.
+void Chip::op_fx1e(byte x) {
+  this->i += registers[x];
+  pc += OP_OFFSET;
+}
+
+// LD - set i = location of sprite for digit vx.
+void Chip::op_fx29(byte x) {
+  this->i = registers[x];
+  pc += OP_OFFSET;
+}
+
+// LD - store bcd ( binary-coded decimal) representation of vx in memory
+// locations i, i+1, i+2.
+void Chip::op_fx33(byte x) {
+  byte bcd = registers[x];
+  // hundreds
+  byte c = bcd / 100;
+  // decimals
+  byte d = (bcd % 100) / 10;
+  // units
+  byte b = bcd % 10;
+  // store values
+  memory[i] = c;
+  memory[i + 1] = d;
+  memory[i + 2] = b;
+
+  pc += OP_OFFSET;
+}
+
+// LD - store registers v0 to vx in memory starting at location i.
+void Chip::op_fx55(byte x) {
+  for (unsigned j = this->i, k = 0; j < x; j++, k++)
+    memory[j] = registers[k];
+  pc += OP_OFFSET;
+}
+
+// LD - store registers v0 to vx in memory starting at location i.
+void Chip::op_fx65(byte x) {
+  for (unsigned j = this->i, k = 0; j < x; j++, k++)
+    registers[k] = memory[j];
   pc += OP_OFFSET;
 }

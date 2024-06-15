@@ -49,25 +49,40 @@ public:
   void op_bnnn(word addr);
   void op_cxkk(byte x, byte kk);
   void op_dxyn(byte x, byte y, byte n);
+  void op_ex9e(byte x);
+  void op_exa1(byte x);
+  void op_fx07(byte x);
+  void op_fx0a(byte x);
+  void op_fx15(byte x);
+  void op_fx18(byte x);
+  void op_fx1e(byte x);
+  void op_fx29(byte x);
+  void op_fx33(byte x);
+  void op_fx55(byte x);
+  void op_fx65(byte x);
 
 private:
   /*
-  ======================================================
-    - rt, rd: Time and Delay registers.
+  ===================================================================
+    - dt: Time registers.
+    - st: Time registers.
+    - sp: Time registers.
+    - delay_timer: value of the delay.
+    - sound_timer: value of the sound.
     - i: Instruction register.
     - pc: Program counter.
     - sp: Stack pointer.
-    - Stack: It has up to 16 addresses of space, Chip8 only allows up to 16
-  subroutines calls.
-    - Memory: From 0x000 to 0x01FF is Program/Data Space.
-    - Registers: Chip8 has 16 8-bits registers, 0xF register usually is used to
-  store flags.
-    - Keyboard: It has 16-key hexadecimal layout.
-  ======================================================
-  */
-  byte rt;
-  byte rd;
+    - stack: Chip8 only allows up to 16 subroutines calls.
+    - memory: From 0x000 to 0x01FF is Program/Data Space.
+    - registers: Chip8 has 16 8-bits registers, 0xF is flag register.
+    - keyboard: It has 16-key hexadecimal layout.
+  ===================================================================
+*/
+  byte dt;
+  byte st;
   byte sp;
+  byte delay_timer;
+  byte sound_timer;
   word i;
   word pc;
   std::vector<word> stack;
@@ -75,6 +90,7 @@ private:
   std::vector<byte> registers;
   std::vector<bool> keyboard;
   std::vector<std::vector<byte>> screen;
+  bool screen_drawned;
 };
 
 #endif
