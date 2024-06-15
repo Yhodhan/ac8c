@@ -5,7 +5,7 @@ static const byte SCREEN_WIDTH = 64;
 static const byte SCREEN_HEIGHT = 32;
 
 // Sprites of Chip 8
-std::vector<byte> FONT_SET = {
+unsigned char FONT_SET[80] = {
     0xF0, 0x90, 0x90, 0x90, 0xF0, 0x20, 0x60, 0x20, 0x20, 0x70, 0xF0, 0x10,
     0xF0, 0x80, 0xF0, 0xF0, 0x10, 0xF0, 0x10, 0xF0, 0x90, 0x90, 0xF0, 0x10,
     0x10, 0xF0, 0x80, 0xF0, 0x10, 0xF0, 0xF0, 0x80, 0xF0, 0x90, 0xF0, 0xF0,
@@ -17,17 +17,17 @@ std::vector<byte> FONT_SET = {
 
 Chip::Chip()
     : dt(0), st(0), sp(0), delay_timer(0), sound_timer(0), i(0), pc(0x0200),
-      stack(std::vector<word>(16, 0)), memory(std::vector<byte>(0x1000, 0)),
-      registers(std::vector<byte>(16, 0)), keyboard(std::vector<bool>(16, 0)),
-      screen_drawned(false),
+      stack{0}, memory{0}, registers{0}, keyboard{false}, screen_drawned(false),
       screen(std::vector<std::vector<byte>>(64, std::vector<byte>(32, 0))) {
-  for (unsigned i = 0; i < FONT_SET.size(); i++)
+  for (unsigned i = 0; i < 80; i++)
     memory[i] = FONT_SET[i];
 }
 
 Chip::~Chip() {}
 
-// Execution functions
+// =====================
+//  Execution functions
+// =====================
 
 word Chip::fetch() {
   word addr = pc;

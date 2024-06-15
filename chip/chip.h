@@ -85,12 +85,12 @@ private:
   byte sound_timer;
   word i;
   word pc;
-  std::vector<word> stack;
-  std::vector<byte> memory;
-  std::vector<byte> registers;
-  std::vector<bool> keyboard;
-  std::vector<std::vector<byte>> screen;
+  word stack[16];
+  byte memory[0x1000];
+  byte registers[16];
+  bool keyboard[16];
   bool screen_drawned;
+  std::vector<std::vector<byte>> screen;
 };
 
 #endif
