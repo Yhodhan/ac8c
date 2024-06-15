@@ -1,5 +1,4 @@
 #include "chip.h"
-#include "decoder/decoder.h"
 
 static const word OP_OFFSET = 2;
 static const byte SCREEN_WIDTH = 64;
