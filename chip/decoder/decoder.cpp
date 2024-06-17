@@ -1,4 +1,5 @@
 #include "decoder.h"
+
 Instruction decode(Opcode opcode) {
   switch (opcode.high()) {
   case 0x00:

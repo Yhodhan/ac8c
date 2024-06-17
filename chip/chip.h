@@ -4,14 +4,14 @@
 #include "decoder/decoder.h"
 #include "opcode/opcode.h"
 #include <cstdint>
+#include <fstream>
 #include <iostream>
 #include <ostream>
 #include <random>
+#include <string>
 #include <vector>
 
-#define loop                                                                   \
-  for (;;)                                                                     \
-    ;
+#define loop for (;;)
 
 /*
  =================
@@ -23,6 +23,7 @@ public:
   Chip();
   ~Chip();
   word fetch();
+  void load_rom(std::string rom_path);
   void execute(Opcode opcode);
   void cycle();
   void op_00e0();
@@ -59,6 +60,8 @@ public:
   void op_fx33(byte x);
   void op_fx55(byte x);
   void op_fx65(byte x);
+
+  void print_mem();
 
 private:
   /*

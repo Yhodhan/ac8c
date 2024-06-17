@@ -1,2 +1,4 @@
 ac8c
 .gdb_history
+.ignore
+chip8-roms/

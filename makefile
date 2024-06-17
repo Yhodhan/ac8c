@@ -11,4 +11,4 @@ format:
 	find . -iname '*.h' -o -iname '*.cpp' | xargs clang-format -style=llvm -i 
 
 run: 
-	./ac8c
+	./ac8c chip8-roms/demos/'Maze (alt) [David Winter, 199x].ch8'

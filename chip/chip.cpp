@@ -26,6 +26,20 @@ Chip::Chip()
 
 Chip::~Chip() {}
 
+void Chip::load_rom(std::string rom_path) {
+  std::ifstream input_rom(rom_path, std::ios::binary);
+
+  // copy data into a buffer
+  std::vector<unsigned char> buffer(std::istreambuf_iterator<char>(input_rom),
+                                    {});
+  // copy data to chip memory
+  word addr = pc;
+  for (auto bin : buffer) {
+    memory[addr] = bin;
+    addr += 1;
+  }
+}
+
 // =====================
 //  Execution functions
 // =====================
@@ -44,6 +58,9 @@ void Chip::execute(Opcode opcode) {
       xxxx | xxxx | xxxx | xxxx |
     =============================
   */
+  // std::cout << "opcode is: " << " ";
+  // std::cout << opcode.opcode << "with PC: " << pc << std::endl;
+
   byte x = opcode.x();
   byte y = opcode.y();
   byte n = opcode.low();
@@ -51,6 +68,9 @@ void Chip::execute(Opcode opcode) {
   word nnn = opcode.address();
 
   Instruction instruction = decode(opcode);
+
+  // std::cout << "instruction is: " << static_cast<int>(instruction) <<
+  // std::endl;
 
   switch (instruction) {
     case Instruction::OP_00E0: op_00e0(); break;
