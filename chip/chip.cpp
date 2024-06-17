@@ -58,8 +58,6 @@ void Chip::execute(Opcode opcode) {
       xxxx | xxxx | xxxx | xxxx |
     =============================
   */
-  // std::cout << "opcode is: " << " ";
-  // std::cout << opcode.opcode << "with PC: " << pc << std::endl;
 
   byte x = opcode.x();
   byte y = opcode.y();
@@ -68,9 +66,6 @@ void Chip::execute(Opcode opcode) {
   word nnn = opcode.address();
 
   Instruction instruction = decode(opcode);
-
-  // std::cout << "instruction is: " << static_cast<int>(instruction) <<
-  // std::endl;
 
   switch (instruction) {
     case Instruction::OP_00E0: op_00e0(); break;

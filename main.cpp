@@ -1,4 +1,5 @@
 #include "chip/chip.h"
+#include "displayer/display.h"
 #include <memory>
 
 int main(int argc, char **argv) {
@@ -8,10 +9,14 @@ int main(int argc, char **argv) {
               << std::endl;
     exit(EXIT_FAILURE);
   }
+
   // Init chip
   std::unique_ptr<Chip> chip(new Chip());
   chip->load_rom(argv[1]);
   chip->cycle();
+
+  // Init display
+  std::unique_ptr<Display> display(new Display);
 
   return 0;
 }
