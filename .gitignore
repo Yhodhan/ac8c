@@ -1,4 +1,5 @@
 build/
+**/*.o
 .gdb_history
 .ignore
 chip8-roms/
