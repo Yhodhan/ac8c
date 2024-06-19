@@ -1,4 +1,7 @@
 #include "display.h"
+#include <SDL2/SDL_pixels.h>
+#include <SDL2/SDL_rect.h>
+#include <SDL2/SDL_render.h>
 
 void sdl_error() {
   std::cerr << "SDL Error: " << SDL_GetError() << std::endl;
@@ -21,3 +24,28 @@ Display::~Display() {
   SDL_DestroyWindow(window);
   SDL_Quit();
 }
+
+void Display::draw_line(Screen screen, unsigned row, unsigned col){
+  if (screen[row][col] == 0)
+    SDL_SetRenderDrawColor(render, 0, 0, 0, 0);
+  else 
+    SDL_SetRenderDrawColor(render, 255, 0, 0, 255);
+    
+  SDL_Rect rect = SDL_Rect {
+    .x = (int) row * 20,
+    .y = (int) col * 20,
+    .w = 20,
+    .h = 20,
+  };
+
+  SDL_RenderDrawRect(render, &rect);
+  SDL_RenderFillRect(render, &rect);
+}
+
+void Display::draw(Screen screen) {
+  for (unsigned i = 0; i < screen.size(); i++)
+    for(unsigned j = 0; j < screen[0].size(); j++) 
+      draw_line(screen, i, j);
+}
+
+

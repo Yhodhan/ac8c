@@ -1,17 +1,9 @@
 #ifndef CHIP_H
 #define CHIP_H
 
+#include "../utils.h"
 #include "decoder/decoder.h"
 #include "opcode/opcode.h"
-#include <cstdint>
-#include <fstream>
-#include <iostream>
-#include <ostream>
-#include <random>
-#include <string>
-#include <vector>
-
-#define loop for (;;)
 
 /*
  =================
@@ -25,7 +17,6 @@ public:
   word fetch();
   void load_rom(std::string rom_path);
   void execute(Opcode opcode);
-  void cycle();
   void op_00e0();
   void op_00ee();
   void op_1nnn(word addr);
@@ -60,8 +51,7 @@ public:
   void op_fx33(byte x);
   void op_fx55(byte x);
   void op_fx65(byte x);
-
-  void print_mem();
+  Screen screen();
 
 private:
   /*
@@ -78,6 +68,7 @@ private:
       - memory: From 0x000 to 0x01FF is Program/Data Space.
       - registers: Chip8 has 16 8-bits registers, 0xF is flag register.
       - keyboard: It has 16-key hexadecimal layout.
+      - screen: It represents the internal state of emulator screen
     ===================================================================
   */
   byte dt;
@@ -94,7 +85,7 @@ private:
   bool screen_drawned;
   bool key_pressed;
   byte key_pres_reg;
-  std::vector<std::vector<byte>> screen;
+  Screen _screen;
 };
 
 #endif

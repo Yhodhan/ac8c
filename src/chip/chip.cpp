@@ -19,7 +19,7 @@ Chip::Chip()
     : dt(0), st(0), sp(0), delay_timer(0), sound_timer(0), i(0), pc(0x0200),
       stack{0}, memory{0}, registers{0}, keyboard{false}, screen_drawned(false),
       key_pressed(false), key_pres_reg(0),
-      screen(std::vector<std::vector<byte>>(64, std::vector<byte>(32, 0))) {
+      _screen(std::vector<std::vector<byte>>(64, std::vector<byte>(32, 0))) {
   for (unsigned i = 0; i < 80; i++)
     memory[i] = FONT_SET[i];
 }
@@ -50,7 +50,7 @@ void Chip::execute(Opcode opcode) {
 
   /*
     =============================
-          opcode composition
+          OPCODE COMPOSITION
     =============================
            |      address       |
            |      |    byte     |
@@ -106,21 +106,14 @@ void Chip::execute(Opcode opcode) {
   }
 }
 
-void Chip::cycle() {
-  loop {
-    Opcode opcode = fetch();
-    execute(opcode);
-  }
-}
-
 // ==============
 //  Instructions
 // ==============
 
 // CLS - clear display
 void Chip::op_00e0() {
-  for (unsigned i = 0; i < screen.size(); i++)
-    fill(screen[i].begin(), screen[i].end(), 0);
+  for (unsigned i = 0; i < _screen.size(); i++)
+    fill(_screen[i].begin(), _screen[i].end(), 0);
   pc += OP_OFFSET;
 }
 
@@ -286,8 +279,8 @@ void Chip::op_dxyn(byte x, byte y, byte n) {
       byte cx = (registers[x] + j) % SCREEN_WIDTH;
       byte pixel = (sprite >> (7 - bit));
       // check if changes the pixels in the screen
-      registers[0x0f] |= pixel & screen[cy][cx];
-      screen[cy][cx] = pixel ^ screen[cy][cx];
+      registers[0x0f] |= pixel & _screen[cy][cx];
+      _screen[cy][cx] = pixel ^ _screen[cy][cx];
     }
   }
   screen_drawned = true;
@@ -381,3 +374,5 @@ void Chip::op_fx65(byte x) {
     registers[k] = memory[j];
   pc += OP_OFFSET;
 }
+
+Screen Chip::screen() { return _screen; }

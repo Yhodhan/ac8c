@@ -1,4 +1,4 @@
-.PHONY: all target format run clean
+.PHONY: all format run clean
 
 BUILD = build
 TARGET = $(BUILD)/ac8c
@@ -11,24 +11,29 @@ OBJS=$(patsubst %.cpp, %.o, $(SRC))
 # Link library and sanitizer flags.
 LIBS=--std=c++20 -lSDL2  
 CXXFLAGS =-g -pipe -Wall -Wformat -Werror \
-           -Wextra -Wuninitialized -Winit-self -Wmaybe-uninitialized -Os -O3
+           -Wextra -Wuninitialized -Winit-self -Wmaybe-uninitialized -I.
 
-all: target $(TARGET)
+# ===================
+#    TARGET RULES
+# ===================
+
+all: $(TARGET) 
 
 $(TARGET): $(OBJS)
+	@ mkdir -p $(BUILD)
 	$(CXX) $(LIBS) -o $@ $^
 
 %.o : %.cpp
-	$(CXX) $(LIBS) $(CXXFLAGS) -c -o $@ $^
-
-target:
-	mkdir -p $(BUILD)
+	$(CXX) $(LIBS) $(CXXFLAGS) -c $^ -o $@
 
 format:
 	find . -iname '*.h' -o -iname '*.cpp' | xargs clang-format -style=llvm -i 
 	
 run: 
-	build/ac8c chip8-roms/demos/'Maze (alt) [David Winter, 199x].ch8'
+	build/ac8c roms/demos/'Maze (alt) [David Winter, 199x].ch8'
+
+debug:
+	gdb --args build/ac8c roms/demos/'Maze (alt) [David Winter, 199x].ch8'
 
 clean:
 	rm -rf $(BUILD) $(OBJS)

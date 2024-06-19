@@ -1,10 +1,7 @@
 #ifndef OPCODE_H
 #define OPCODE_H
 
-#include <cstdint>
-
-typedef uint8_t byte;
-typedef uint16_t word;
+#include "../../utils.h"
 
 struct Opcode {
   word opcode;
