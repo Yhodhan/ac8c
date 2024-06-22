@@ -6,7 +6,7 @@ SRC_DIR = src
 
 # Find all the C++ files to compile.
 SRC = $(shell find $(SRC_DIR) -name '*.cpp')
-OBJS=$(patsubst %.cpp, %.o, $(SRC))
+OBJS= $(patsubst %.cpp, %.o, $(SRC))
 
 # Link library and sanitizer flags.
 LIBS=--std=c++20 -lSDL2  
