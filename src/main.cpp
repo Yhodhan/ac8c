@@ -1,10 +1,8 @@
 #include "chip/chip.h"
 #include "displayer/display.h"
-#include <SDL2/SDL_events.h>
 #include <memory>
 
 void init(std::string rom) {
-
 
   // Init chip
   std::unique_ptr<Chip> chip(new Chip());

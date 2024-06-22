@@ -27,8 +27,8 @@ $(TARGET): $(OBJS)
 	$(CXX) $(LIBS) $(CXXFLAGS) -c $^ -o $@
 
 format:
-	find . -iname '*.h' -o -iname '*.cpp' | xargs clang-format -style=llvm -i 
-	
+	find . -iname '*.h' -o -iname '*.cpp' | xargs clang-format -style=llvm -i
+
 run: 
 	build/ac8c roms/demos/'Maze (alt) [David Winter, 199x].ch8'
 
@@ -37,4 +37,3 @@ debug:
 
 clean:
 	rm -rf $(BUILD) $(OBJS)
-	
