@@ -26,11 +26,11 @@ Display::~Display() {
 }
 
 void Display::draw_line(Screen screen, unsigned row, unsigned col){
-  if (screen[row][col] == 0)
-    SDL_SetRenderDrawColor(render, 0, 0, 0, 0);
-  else 
+  if (screen[row][col])
     SDL_SetRenderDrawColor(render, 255, 0, 0, 255);
-    
+  else 
+    SDL_SetRenderDrawColor(render, 0, 0, 0, 0);
+
   SDL_Rect rect = SDL_Rect {
     .x = (int) row * 20,
     .y = (int) col * 20,
@@ -43,9 +43,12 @@ void Display::draw_line(Screen screen, unsigned row, unsigned col){
 }
 
 void Display::draw(Screen screen) {
+  SDL_RenderClear(render);
   for (unsigned i = 0; i < screen.size(); i++)
     for(unsigned j = 0; j < screen[0].size(); j++) 
       draw_line(screen, i, j);
+
+  SDL_RenderPresent(render);
 }
 
 

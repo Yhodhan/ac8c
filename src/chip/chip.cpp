@@ -43,7 +43,6 @@ void Chip::load_rom(std::string rom_path) {
 // =====================
 //  Execution functions
 // =====================
-
 word Chip::fetch() { return ((memory[pc]) << 8 | memory[pc + 1]); }
 
 void Chip::execute(Opcode opcode) {
@@ -270,9 +269,9 @@ void Chip::op_cxkk(byte x, byte kk) {
 */
 void Chip::op_dxyn(byte x, byte y, byte n) {
   registers[0x0f] = 0;
-  for (unsigned j = this->i; j <= n; j++) {
+  for (unsigned j = 0; j <= n; j++) {
     // column y
-    byte sprite = memory[j];
+    byte sprite = memory[this->i + j];
     byte cy = (registers[y] + j) % SCREEN_HEIGHT;
     for (unsigned bit = 0; bit < 8; bit++) {
       // line x
@@ -280,7 +279,7 @@ void Chip::op_dxyn(byte x, byte y, byte n) {
       byte pixel = (sprite >> (7 - bit));
       // check if changes the pixels in the screen
       registers[0x0f] |= pixel & _screen[cy][cx];
-      _screen[cy][cx] = pixel ^ _screen[cy][cx];
+      _screen[cx][cy] = pixel ^ _screen[cy][cx];
     }
   }
   screen_drawned = true;

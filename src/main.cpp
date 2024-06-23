@@ -18,14 +18,14 @@ void init(std::string rom) {
     display->draw(chip->screen());
 
     SDL_Event event;
-    while (SDL_PollEvent(&event)){
+    while(SDL_PollEvent(&event)){
       if (event.type == SDL_QUIT)
         break;
       else if (event.type == SDL_KEYDOWN)
         break;
     }
 
-    SDL_Delay(100);
+    SDL_Delay(10);
   }
 }
 
