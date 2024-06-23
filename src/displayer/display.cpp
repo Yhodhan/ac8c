@@ -1,7 +1,4 @@
 #include "display.h"
-#include <SDL2/SDL_pixels.h>
-#include <SDL2/SDL_rect.h>
-#include <SDL2/SDL_render.h>
 
 void sdl_error() {
   std::cerr << "SDL Error: " << SDL_GetError() << std::endl;
