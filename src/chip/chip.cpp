@@ -112,7 +112,7 @@ void Chip::execute(Opcode opcode) {
 // CLS - clear display
 void Chip::op_00e0() {
   for (unsigned i = 0; i < _screen.size(); i++)
-    fill(_screen[i].begin(), _screen[i].end(), 0);
+    std::ranges::fill(_screen[i], 0);
   pc += OP_OFFSET;
 }
 
