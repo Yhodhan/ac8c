@@ -10,7 +10,6 @@ void init(std::string rom) {
 
   // Init display
   std::unique_ptr<Display> display(new Display);
-
   loop {
     Opcode opcode = chip->fetch();
     chip->execute(opcode);
@@ -20,13 +19,14 @@ void init(std::string rom) {
     SDL_Event event;
     while(SDL_PollEvent(&event)){
       if (event.type == SDL_QUIT)
-        break;
-      else if (event.type == SDL_KEYDOWN)
-        break;
+        goto out;
     }
 
     SDL_Delay(10);
   }
+  // Finish emulation
+  out:
+  std::cout << "Finish Emulation" << std::endl;
 }
 
 int main(int argc, char **argv) {

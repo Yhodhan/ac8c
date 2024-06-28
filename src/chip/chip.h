@@ -6,7 +6,6 @@
 #include "opcode/opcode.h"
 #include <algorithm>
 
-
 /*
  =================
    CHIP8 EMULATOR
