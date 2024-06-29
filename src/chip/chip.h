@@ -53,6 +53,7 @@ public:
   void op_fx55(byte x);
   void op_fx65(byte x);
   Screen screen();
+  bool screen_drawn();
 
 private:
   /*
@@ -65,11 +66,11 @@ private:
       - i: Instruction register.
       - pc: Program counter.
       - sp: Stack pointer.
-      - stack: Chip8 only allows up to 16 subroutines calls.
-      - memory: From 0x000 to 0x01FF is Program/Data Space.
-      - registers: Chip8 has 16 8-bits registers, 0xF is flag register.
-      - keyboard: It has 16-key hexadecimal layout.
-      - screen: It represents the internal state of emulator screen
+      - stack: chip8 only allows up to 16 subroutines calls.
+      - memory: from 0x000 to 0x01ff is program/data space.
+      - registers: chip8 has 16 8-bits registers, 0xf is flag register.
+      - keyboard: it has 16-key hexadecimal layout.
+      - screen: it represents the internal state of emulator screen
     ===================================================================
   */
   byte dt;

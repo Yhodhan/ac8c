@@ -19,7 +19,7 @@ Chip::Chip()
     : dt(0), st(0), sp(0), delay_timer(0), sound_timer(0), i(0), pc(0x0200),
       stack{0}, memory{0}, registers{0}, keyboard{false}, screen_drawned(false),
       key_pressed(false), key_pres_reg(0),
-      _screen(std::vector<std::vector<byte>>(64, std::vector<byte>(32, 0))) {
+     _screen(std::vector<std::vector<byte>>(SCREEN_HEIGHT, std::vector<byte>(SCREEN_WIDTH, 0))) {
   for (unsigned i = 0; i < 80; i++)
     memory[i] = FONT_SET[i];
 }
@@ -35,9 +35,15 @@ void Chip::load_rom(std::string rom_path) {
   // copy data to chip memory
   word addr = pc;
   for (auto bin : buffer) {
+    if (addr > 4095)
+      break;
     memory[addr] = bin;
     addr += 1;
   }
+}
+
+bool Chip::screen_drawn(){
+  return screen_drawned;
 }
 
 // =====================
@@ -97,7 +103,8 @@ void Chip::execute(Opcode opcode) {
     case Instruction::OP_FX15: op_fx15(x); break;
     case Instruction::OP_FX18: op_fx18(x); break;
     case Instruction::OP_FX1E: op_fx1e(x); break;
-    case Instruction::OP_FX29: op_fx29(x); break;
+    case Instruction::OP_FX29: op_fx29(x); break
+;
     case Instruction::OP_FX33: op_fx33(x); break;
     case Instruction::OP_FX55: op_fx55(x); break;
     case Instruction::OP_FX65: op_fx65(x); break;
@@ -127,7 +134,7 @@ void Chip::op_1nnn(word addr) { pc = addr; }
 
 // CALL - call subroutine at nnn
 void Chip::op_2nnn(word addr) {
-  stack[sp] = pc;
+  stack[sp] = pc + OP_OFFSET;
   sp += 1;
   pc = addr;
 }
@@ -242,10 +249,9 @@ void Chip::op_annn(word addr) {
   pc += OP_OFFSET;
 }
 
-// Bnnn - set I = nnn
+// JP - Jump to location nnn + v0
 void Chip::op_bnnn(word addr) {
-  pc = (word)registers[0x0] + addr;
-  pc += OP_OFFSET;
+  pc = (word)registers[0x00] + addr;
 }
 
 // RND - set vx = random byte AND kk;
@@ -269,17 +275,17 @@ void Chip::op_cxkk(byte x, byte kk) {
 */
 void Chip::op_dxyn(byte x, byte y, byte n) {
   registers[0x0f] = 0;
-  for (unsigned j = 0; j <= n; j++) {
+  for (unsigned Byte = 0; Byte < n; Byte++) {
     // column y
-    byte sprite = memory[this->i + j];
-    byte cy = (registers[y] + j) % SCREEN_HEIGHT;
+    byte sprite = memory[this->i + Byte];
+    byte cy = (registers[y] + Byte) % SCREEN_HEIGHT;
     for (unsigned bit = 0; bit < 8; bit++) {
-      // line x
-      byte cx = (registers[x] + j) % SCREEN_WIDTH;
-      byte pixel = (sprite >> (7 - bit));
+      // row x
+      byte cx = (registers[x] + bit) % SCREEN_WIDTH;
+      byte pixel = sprite >> (7 - bit) & 1;
       // check if changes the pixels in the screen
       registers[0x0f] |= pixel & _screen[cy][cx];
-      _screen[cx][cy] = pixel ^ _screen[cy][cx];
+      _screen[cy][cx] = pixel ^ _screen[cy][cx];
     }
   }
   screen_drawned = true;
@@ -338,7 +344,7 @@ void Chip::op_fx1e(byte x) {
 
 // LD - set i = location of sprite for digit vx.
 void Chip::op_fx29(byte x) {
-  this->i = registers[x];
+  this->i = registers[x] * 5;
   pc += OP_OFFSET;
 }
 
@@ -362,15 +368,15 @@ void Chip::op_fx33(byte x) {
 
 // LD - store registers v0 to vx in memory starting at location i.
 void Chip::op_fx55(byte x) {
-  for (unsigned j = this->i, k = 0; j < x; j++, k++)
-    memory[j] = registers[k];
+  for(int i = 0; i <= x+1; i++)
+    memory[this->i + i] = registers[i];
   pc += OP_OFFSET;
 }
 
 // LD - store registers v0 to vx in memory starting at location i.
 void Chip::op_fx65(byte x) {
-  for (unsigned j = this->i, k = 0; j < x; j++, k++)
-    registers[k] = memory[j];
+  for(int i = 0; i <= x+1; i++)
+    registers[i] = memory[this->i + i];
   pc += OP_OFFSET;
 }
 

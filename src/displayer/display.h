@@ -19,7 +19,7 @@ class Display {
   private:
     SDL_Window* window = NULL;
     SDL_Renderer* render = NULL;
-    void draw_line(Screen screen, unsigned row, unsigned col);
+    void draw_line(Screen screen, unsigned x, unsigned y);
 };
 
 #endif

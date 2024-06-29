@@ -3,26 +3,24 @@
 #include <memory>
 
 void init(std::string rom) {
-
   // Init chip
   std::unique_ptr<Chip> chip(new Chip());
   chip->load_rom(rom);
-
   // Init display
   std::unique_ptr<Display> display(new Display);
+
   loop {
     Opcode opcode = chip->fetch();
     chip->execute(opcode);
 
-    display->draw(chip->screen());
+    if(chip->screen_drawn())
+      display->draw(chip->screen());
 
     SDL_Event event;
     while(SDL_PollEvent(&event)){
       if (event.type == SDL_QUIT)
         goto out;
     }
-
-    SDL_Delay(10);
   }
   // Finish emulation
   out:

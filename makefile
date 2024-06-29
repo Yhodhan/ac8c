@@ -17,7 +17,10 @@ CXXFLAGS =-g -pipe -Wall -Wformat -Werror \
 #    TARGET RULES
 # ===================
 
-all: $(TARGET) 
+run: all
+	build/ac8c roms/'invaders.ch8'
+
+all: $(TARGET)
 
 $(TARGET): $(OBJS)
 	@ mkdir -p $(BUILD)
@@ -29,12 +32,8 @@ $(TARGET): $(OBJS)
 format:
 	find . -iname '*.h' -o -iname '*.cpp' | xargs clang-format -style=llvm -i
 
-run: 
-	build/ac8c roms/'invaders.ch8'
-
 debug:
-	gdb --args build/ac8c roms/demos/'Particle.ch8'
-
+	gdb --args build/ac8c roms/'invaders.ch8'
 
 clean:
 	rm -rf $(BUILD) $(OBJS)
