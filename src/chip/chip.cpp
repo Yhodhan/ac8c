@@ -103,8 +103,7 @@ void Chip::execute(Opcode opcode) {
     case Instruction::OP_FX15: op_fx15(x); break;
     case Instruction::OP_FX18: op_fx18(x); break;
     case Instruction::OP_FX1E: op_fx1e(x); break;
-    case Instruction::OP_FX29: op_fx29(x); break
-;
+    case Instruction::OP_FX29: op_fx29(x); break;
     case Instruction::OP_FX33: op_fx33(x); break;
     case Instruction::OP_FX55: op_fx55(x); break;
     case Instruction::OP_FX65: op_fx65(x); break;
