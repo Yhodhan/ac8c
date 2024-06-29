@@ -4,7 +4,6 @@
 #include "../utils.h"
 #include "decoder/decoder.h"
 #include "opcode/opcode.h"
-#include <algorithm>
 
 /*
  =================
