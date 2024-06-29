@@ -45,6 +45,7 @@ Instruction decode(Opcode opcode) {
       case 0x0A: return Instruction::OP_FX0A;
       case 0x15: return Instruction::OP_FX15;
       case 0x18: return Instruction::OP_FX18;
+      case 0x1e: return Instruction::OP_FX1E;
       case 0x29: return Instruction::OP_FX29;
       case 0x33: return Instruction::OP_FX33;
       case 0x55: return Instruction::OP_FX55;
