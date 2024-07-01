@@ -5,6 +5,15 @@
 #include <random>
 #include <string>
 #include <vector>
+#include <algorithm>
+#include <functional>
+#include <SDL2/SDL_stdinc.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+#include <SDL2/SDL_render.h>
+#include <SDL2/SDL_timer.h>
+#include <SDL2/SDL_video.h>
+#include <array>
 
 #define loop for (;;)
 #define Screen std::vector<std::vector<byte>>

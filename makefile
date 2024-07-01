@@ -18,7 +18,7 @@ CXXFLAGS = -g -pipe -Wall -Wformat -Werror \
 # ===================
 
 run: all
-	build/ac8c roms/'invaders.ch8'
+	build/ac8c roms/'tetris.ch8'
 
 all: $(TARGET)
 

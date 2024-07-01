@@ -17,7 +17,7 @@ unsigned char FONT_SET[80] = {
 
 Chip::Chip()
     : dt(0), st(0), sp(0), delay_timer(0), sound_timer(0), i(0), pc(0x0200),
-      stack{0}, memory{0}, registers{0}, keyboard{false}, screen_drawned(false),
+      stack{0}, memory{0}, registers{0}, keyboard(new Input), screen_drawned(false),
       key_pressed(false), key_pres_reg(0),
      _screen(std::vector<std::vector<byte>>(SCREEN_HEIGHT, std::vector<byte>(SCREEN_WIDTH, 0))) {
   for (unsigned i = 0; i < 80; i++)
@@ -275,16 +275,16 @@ void Chip::op_cxkk(byte x, byte kk) {
 void Chip::op_dxyn(byte x, byte y, byte n) {
   registers[0x0f] = 0;
   for (unsigned Byte = 0; Byte < n; Byte++) {
-    // column y
+    // column x
     byte sprite = memory[this->i + Byte];
-    byte cy = (registers[y] + Byte) % SCREEN_HEIGHT;
+    byte cx = (registers[y] + Byte) % SCREEN_HEIGHT;
     for (unsigned bit = 0; bit < 8; bit++) {
       // row x
-      byte cx = (registers[x] + bit) % SCREEN_WIDTH;
+      byte cy = (registers[x] + bit) % SCREEN_WIDTH;
       byte pixel = sprite >> (7 - bit) & 1;
       // check if changes the pixels in the screen
-      registers[0x0f] |= pixel & _screen[cy][cx];
-      _screen[cy][cx] = pixel ^ _screen[cy][cx];
+      registers[0x0f] |= pixel & _screen[cx][cy];
+      _screen[cx][cy] = pixel ^ _screen[cx][cy];
     }
   }
   screen_drawned = true;
@@ -294,7 +294,7 @@ void Chip::op_dxyn(byte x, byte y, byte n) {
 // SKP - skip next instruction if key with the value of vx is pressed.
 void Chip::op_ex9e(byte x) {
   byte key = registers[x];
-  if (keyboard[key])
+  if (keyboard->is_pressed(key))
     pc += 2 * OP_OFFSET;
   else
     pc += OP_OFFSET;
@@ -303,7 +303,7 @@ void Chip::op_ex9e(byte x) {
 // SKNP - skip next instruction if key with the value of vx is not pressed.
 void Chip::op_exa1(byte x) {
   byte key = registers[x];
-  if (!keyboard[key])
+  if (!keyboard->is_pressed(key))
     pc += 2 * OP_OFFSET;
   else
     pc += OP_OFFSET;
@@ -367,16 +367,33 @@ void Chip::op_fx33(byte x) {
 
 // LD - store registers v0 to vx in memory starting at location i.
 void Chip::op_fx55(byte x) {
-  for(int i = 0; i <= x+1; i++)
+  for(int i = 0; i < x+1; i++)
     memory[this->i + i] = registers[i];
   pc += OP_OFFSET;
 }
 
 // LD - store registers v0 to vx in memory starting at location i.
 void Chip::op_fx65(byte x) {
-  for(int i = 0; i <= x+1; i++)
+  for(int i = 0; i < x+1; i++)
     registers[i] = memory[this->i + i];
   pc += OP_OFFSET;
 }
 
 Screen Chip::screen() { return _screen; }
+
+void Chip::set_key(int key, bool state) {
+  keyboard->set_key(key, state);
+}
+
+bool Chip::poll_events() {
+  bool running = true;
+  SDL_Event event;
+  while(SDL_PollEvent(&event)){
+    switch (event.type){
+      case SDL_KEYDOWN: set_key(event.key.keysym.sym, true); break;
+      case SDL_KEYUP: set_key(event.key.keysym.sym, false); break;
+      case SDL_QUIT: running = false; break;
+    }
+  }
+  return running;
+}

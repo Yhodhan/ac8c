@@ -16,19 +16,15 @@ void init(std::string rom) {
     if(chip->screen_drawn())
       display->draw(chip->screen());
 
-    SDL_Event event;
-    while(SDL_PollEvent(&event)){
-      if (event.type == SDL_QUIT)
-        goto out;
+    // if exit is pressed the emulation ends
+    if(!chip->poll_events())
+      break;
     }
-  }
   // Finish emulation
-  out:
   std::cout << "Finish Emulation" << std::endl;
 }
 
 int main(int argc, char **argv) {
-
   if (argc < 2) {
     std::cerr << "Incorrect number of argments, rom path not provided"
               << std::endl;

@@ -2,6 +2,7 @@
 #define CHIP_H
 
 #include "../utils.h"
+#include "keyboard/keyboard.h"
 #include "decoder/decoder.h"
 #include "opcode/opcode.h"
 
@@ -53,6 +54,8 @@ public:
   void op_fx65(byte x);
   Screen screen();
   bool screen_drawn();
+  void set_key(int, bool);
+  bool poll_events();
 
 private:
   /*
@@ -82,7 +85,7 @@ private:
   word stack[16];
   byte memory[0x1000];
   byte registers[16];
-  bool keyboard[16];
+  Input* keyboard;
   bool screen_drawned;
   bool key_pressed;
   byte key_pres_reg;
