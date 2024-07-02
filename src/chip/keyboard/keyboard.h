@@ -5,17 +5,10 @@
 
 class Input {
     public:
-        bool operator[](byte index) {
-            return keyboard.at(index);
-        }
 
-        bool is_pressed(byte key) {
-            return keyboard.at(keymap.at(key));
-        }
-
-        void set_key(byte index, bool state){
-            keyboard[index] = state;
-        }
+        bool operator[](byte index);
+        bool is_pressed(byte key);
+        void set_key(byte index, bool state);
 
     private:
         std::array<bool, 0x10> keyboard = {0};
