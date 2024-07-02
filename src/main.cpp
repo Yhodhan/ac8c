@@ -2,12 +2,12 @@
 #include "displayer/display.h"
 #include <memory>
 
-void init(std::string rom) {
-  // Init chip
+void init_emulation(std::string rom) {
+  // Init chip and display
   std::unique_ptr<Chip> chip(new Chip());
-  chip->load_rom(rom);
-  // Init display
   std::unique_ptr<Display> display(new Display);
+
+  chip->load_rom(rom);
 
   loop {
     Opcode opcode = chip->fetch();
@@ -20,7 +20,7 @@ void init(std::string rom) {
     if(!chip->poll_events())
       break;
     }
-  // Finish emulation
+
   std::cout << "Finish Emulation" << std::endl;
 }
 
@@ -31,6 +31,6 @@ int main(int argc, char **argv) {
     exit(EXIT_FAILURE);
   }
 
-  init(argv[1]);
+  init_emulation(argv[1]);
   return 0;
 }
