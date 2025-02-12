@@ -9,8 +9,8 @@ SRC = $(shell find $(SRC_DIR) -name '*.cpp')
 OBJS= $(patsubst %.cpp, %.o, $(SRC))
 
 # Link library and sanitizer flags.
-LIBS= --std=c++20 -lSDL2
-CXXFLAGS = -g -pipe -Wall -Wformat -Werror \
+LIBS= -lSDL2 -lSDL2_image 
+CXXFLAGS = --std=c++20 -g -pipe -Wall -Wformat -Werror \
            -Wextra -Wuninitialized -Winit-self -Wmaybe-uninitialized -I.
 
 # ===================
@@ -18,19 +18,15 @@ CXXFLAGS = -g -pipe -Wall -Wformat -Werror \
 # ===================
 
 run: all
-	build/ac8c roms/'tetris.ch8'
 
 all: $(TARGET)
 
 $(TARGET): $(OBJS)
 	@ mkdir -p $(BUILD)
-	$(CXX) $(LIBS) -o $@ $^
+	$(CXX) -o $@ $^ $(LIBS)
 
 %.o : %.cpp
-	$(CXX) $(LIBS) $(CXXFLAGS) -c $^ -o $@
-
-format:
-	find . -iname '*.h' -o -iname '*.cpp' | xargs clang-format -style=llvm -i
+	$(CXX) $(CXXFLAGS) -c $^ -o $@
 
 debug:
 	gdb --args build/ac8c roms/'invaders.ch8'
