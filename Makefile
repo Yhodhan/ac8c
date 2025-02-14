@@ -33,8 +33,5 @@ $(TARGET): $(OBJS)
 %.o : %.cpp
 	$(CXX) $(CXXFLAGS) -c $^ -o $@
 
-debug:
-	gdb --args build/ac8c roms/'invaders.ch8'
-
 clean:
 	rm -rf $(BUILD) $(OBJS)
