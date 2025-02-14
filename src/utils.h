@@ -19,3 +19,4 @@
 #define Screen std::vector<std::vector<byte>>
 typedef uint8_t byte;
 typedef uint16_t word;
+#define NUM_KEYS 16

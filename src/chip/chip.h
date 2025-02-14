@@ -88,5 +88,6 @@ private:
   bool screen_drawned;
   bool key_pressed;
   byte key_pres_reg;
+  bool paused;
   Screen _screen;
 };

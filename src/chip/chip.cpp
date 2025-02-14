@@ -16,10 +16,11 @@ unsigned char FONT_SET[80] = {
 };
 
 Chip::Chip()
-    : dt(0), st(0), sp(0), delay_timer(0), sound_timer(0), i(0), pc(0x0200),
-      stack{0}, memory{0}, registers{0}, keyboard(new Input), screen_drawned(false),
-      key_pressed(false), key_pres_reg(0),
-     _screen(std::vector<std::vector<byte>>(SCREEN_HEIGHT, std::vector<byte>(SCREEN_WIDTH, 0))) {
+    : dt(0), st(0), sp(0), delay_timer(0), sound_timer(0), i(0),
+      pc(0x0200), stack{0}, memory{0}, registers{0}, keyboard(new Input),
+      screen_drawned(false), key_pressed(false), key_pres_reg(0), paused(false),
+      _screen(std::vector<std::vector<byte>>(
+          SCREEN_HEIGHT, std::vector<byte>(SCREEN_WIDTH, 0))) {
   for (unsigned i = 0; i < 80; i++)
     memory[i] = FONT_SET[i];
 }
@@ -42,9 +43,7 @@ void Chip::load_rom(std::string rom_path) {
   }
 }
 
-bool Chip::screen_drawn(){
-  return screen_drawned;
-}
+bool Chip::screen_drawn() { return screen_drawned; }
 
 // =====================
 //  Execution functions
@@ -73,41 +72,41 @@ void Chip::execute(Opcode opcode) {
   Instruction instruction = decode(opcode);
 
   switch (instruction) {
-    case Instruction::OP_00E0: op_00e0(); break;
-    case Instruction::OP_00EE: op_00ee(); break;
-    case Instruction::OP_1NNN: op_1nnn(nnn); break;
-    case Instruction::OP_2NNN: op_2nnn(nnn); break;
-    case Instruction::OP_3XKK: op_3xkk(kk, x); break;
-    case Instruction::OP_4XKK: op_4xkk(kk, x); break;
-    case Instruction::OP_5XY0: op_5xy0(x, y); break;
-    case Instruction::OP_6XKK: op_6xkk(kk, x); break;
-    case Instruction::OP_7XKK: op_7xkk(kk, x); break;
-    case Instruction::OP_8XY0: op_8xy0(x, y); break;
-    case Instruction::OP_8XY1: op_8xy2(x, y); break;
-    case Instruction::OP_8XY2: op_8xy2(x, y); break;
-    case Instruction::OP_8XY3: op_8xy3(x, y); break;
-    case Instruction::OP_8XY4: op_8xy4(x, y); break;
-    case Instruction::OP_8XY5: op_8xy5(x, y); break;
-    case Instruction::OP_8XY6: op_8xy6(x); break;
-    case Instruction::OP_8XY7: op_8xy7(x, y); break;
-    case Instruction::OP_8XYE: op_8xye(x); break;
-    case Instruction::OP_9XY0: op_9xy0(x, y); break;
-    case Instruction::OP_ANNN: op_annn(nnn); break;
-    case Instruction::OP_BNNN: op_bnnn(nnn); break;
-    case Instruction::OP_CXKK: op_cxkk(x, kk); break;
-    case Instruction::OP_DXYN: op_dxyn(x, y, n); break;
-    case Instruction::OP_EX9E: op_ex9e(x); break;
-    case Instruction::OP_EXA1: op_exa1(x); break;
-    case Instruction::OP_FX07: op_fx07(x); break;
-    case Instruction::OP_FX0A: op_fx0a(x); break;
-    case Instruction::OP_FX15: op_fx15(x); break;
-    case Instruction::OP_FX18: op_fx18(x); break;
-    case Instruction::OP_FX1E: op_fx1e(x); break;
-    case Instruction::OP_FX29: op_fx29(x); break;
-    case Instruction::OP_FX33: op_fx33(x); break;
-    case Instruction::OP_FX55: op_fx55(x); break;
-    case Instruction::OP_FX65: op_fx65(x); break;
-    default: pc += OP_OFFSET;
+  case Instruction::OP_00E0: op_00e0();break;
+  case Instruction::OP_00EE: op_00ee();break;
+  case Instruction::OP_1NNN: op_1nnn(nnn);break;
+  case Instruction::OP_2NNN: op_2nnn(nnn);break;
+  case Instruction::OP_3XKK: op_3xkk(kk, x);break;
+  case Instruction::OP_4XKK: op_4xkk(kk, x);break;
+  case Instruction::OP_5XY0: op_5xy0(x, y);break;
+  case Instruction::OP_6XKK: op_6xkk(kk, x);break;
+  case Instruction::OP_7XKK: op_7xkk(kk, x);break;
+  case Instruction::OP_8XY0: op_8xy0(x, y);break;
+  case Instruction::OP_8XY1: op_8xy2(x, y);break;
+  case Instruction::OP_8XY2: op_8xy2(x, y);break;
+  case Instruction::OP_8XY3: op_8xy3(x, y);break;
+  case Instruction::OP_8XY4: op_8xy4(x, y);break;
+  case Instruction::OP_8XY5: op_8xy5(x, y);break;
+  case Instruction::OP_8XY6: op_8xy6(x);break;
+  case Instruction::OP_8XY7: op_8xy7(x, y);break;
+  case Instruction::OP_8XYE: op_8xye(x);break;
+  case Instruction::OP_9XY0: op_9xy0(x, y);break;
+  case Instruction::OP_ANNN: op_annn(nnn);break;
+  case Instruction::OP_BNNN: op_bnnn(nnn);break;
+  case Instruction::OP_CXKK: op_cxkk(x, kk);break;
+  case Instruction::OP_DXYN: op_dxyn(x, y, n);break;
+  case Instruction::OP_EX9E: op_ex9e(x);break;
+  case Instruction::OP_EXA1: op_exa1(x);break;
+  case Instruction::OP_FX07: op_fx07(x);break;
+  case Instruction::OP_FX0A: op_fx0a(x);break;
+  case Instruction::OP_FX15: op_fx15(x);break;
+  case Instruction::OP_FX18: op_fx18(x);break;
+  case Instruction::OP_FX1E: op_fx1e(x);break;
+  case Instruction::OP_FX29: op_fx29(x);break;
+  case Instruction::OP_FX33: op_fx33(x);break;
+  case Instruction::OP_FX55: op_fx55(x);break;
+  case Instruction::OP_FX65: op_fx65(x);break;
+  default:pc += OP_OFFSET;
   }
 }
 
@@ -249,9 +248,7 @@ void Chip::op_annn(word addr) {
 }
 
 // JP - Jump to location nnn + v0
-void Chip::op_bnnn(word addr) {
-  pc = (word)registers[0x00] + addr;
-}
+void Chip::op_bnnn(word addr) { pc = (word)registers[0x00] + addr; }
 
 // RND - set vx = random byte AND kk;
 void Chip::op_cxkk(byte x, byte kk) {
@@ -367,33 +364,50 @@ void Chip::op_fx33(byte x) {
 
 // LD - store registers v0 to vx in memory starting at location i.
 void Chip::op_fx55(byte x) {
-  for(int i = 0; i < x+1; i++)
+  for (int i = 0; i < x + 1; i++)
     memory[this->i + i] = registers[i];
   pc += OP_OFFSET;
 }
 
 // LD - store registers v0 to vx in memory starting at location i.
 void Chip::op_fx65(byte x) {
-  for(int i = 0; i < x+1; i++)
+  for (int i = 0; i < x + 1; i++)
     registers[i] = memory[this->i + i];
   pc += OP_OFFSET;
 }
 
 Screen Chip::screen() { return _screen; }
 
-void Chip::set_key(int key, bool state) {
-  keyboard->set_key(key, state);
-}
+void Chip::set_key(int key, bool state) { keyboard->set_key(key, state); }
 
 bool Chip::poll_events() {
   bool running = true;
   SDL_Event event;
-  while(SDL_PollEvent(&event)){
-    switch (event.type){
-      case SDL_KEYDOWN: set_key(event.key.keysym.sym, true); break;
-      case SDL_KEYUP: set_key(event.key.keysym.sym, false); break;
-      case SDL_QUIT: running = false; break;
-    }
+
+  while (SDL_PollEvent(&event)) {
+    if (event.type == SDL_KEYDOWN) {
+
+      switch (event.type) {
+      case SDLK_ESCAPE: running = false; break;
+      case SDLK_SPACE: paused = paused ? false : true; break;
+      default: break;
+      }
+
+      // update keyboard
+      for (unsigned i = 0; i < NUM_KEYS; i++) {
+        if (event.key.keysym.sym == KEYMAP[i]) {
+          keyboard->set_key(i, true);
+        }
+      }
+    } else if (event.type == SDL_KEYUP) {
+      for (unsigned i = 0; i < NUM_KEYS; i++) {
+        if (event.key.keysym.sym == KEYMAP[i]) {
+          keyboard->set_key(i, false);
+        }
+      }
+    } else if (event.type == SDL_QUIT)
+      running = false;
   }
+
   return running;
 }
