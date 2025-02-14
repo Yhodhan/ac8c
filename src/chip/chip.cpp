@@ -19,8 +19,7 @@ Chip::Chip()
     : dt(0), st(0), sp(0), delay_timer(0), sound_timer(0), i(0),
       pc(0x0200), stack{0}, memory{0}, registers{0}, keyboard(new Input),
       screen_drawned(false), key_pressed(false), key_pres_reg(0), paused(false),
-      _screen(std::vector<std::vector<byte>>(
-          SCREEN_HEIGHT, std::vector<byte>(SCREEN_WIDTH, 0))) {
+      _screen(std::vector<std::vector<byte>>(SCREEN_HEIGHT, std::vector<byte>(SCREEN_WIDTH, 0))) {
   for (unsigned i = 0; i < 80; i++)
     memory[i] = FONT_SET[i];
 }
@@ -31,8 +30,8 @@ void Chip::load_rom(std::string rom_path) {
   std::ifstream input_rom(rom_path, std::ios::binary);
 
   // copy data into a buffer
-  std::vector<unsigned char> buffer(std::istreambuf_iterator<char>(input_rom),
-                                    {});
+  std::vector<unsigned char> buffer(std::istreambuf_iterator<char>(input_rom), {});
+
   // copy data to chip memory
   word addr = pc;
   for (auto bin : buffer) {
@@ -393,19 +392,25 @@ bool Chip::poll_events() {
       default: break;
       }
 
-      // update keyboard
+      // update keyboard with pressed letters
       for (unsigned i = 0; i < NUM_KEYS; i++) {
         if (event.key.keysym.sym == KEYMAP[i]) {
           keyboard->set_key(i, true);
         }
       }
-    } else if (event.type == SDL_KEYUP) {
+    }
+
+    // update keyboard with not pressed letters
+    if (event.type == SDL_KEYUP) {
       for (unsigned i = 0; i < NUM_KEYS; i++) {
         if (event.key.keysym.sym == KEYMAP[i]) {
           keyboard->set_key(i, false);
         }
       }
-    } else if (event.type == SDL_QUIT)
+    }
+
+    // quit if x is pressed
+    if (event.type == SDL_QUIT)
       running = false;
   }
 
