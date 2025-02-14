@@ -9,7 +9,11 @@ SRC = $(shell find $(SRC_DIR) -name '*.cpp')
 OBJS= $(patsubst %.cpp, %.o, $(SRC))
 
 # Link library and sanitizer flags.
-LIBS= -lSDL2 -lSDL2_image 
+ifeq ($(OS), Windows_NT)
+LIBS= -lmingw32 -lSDL2main -lSDL2 -lSDL2_image
+else
+LIBS= -lSDL2 -lSDL2_image
+endif
 CXXFLAGS = --std=c++20 -g -pipe -Wall -Wformat -Werror \
            -Wextra -Wuninitialized -Winit-self -Wmaybe-uninitialized -I.
 
