@@ -387,7 +387,7 @@ bool Chip::poll_events() {
     if (event.type == SDL_KEYDOWN) {
 
       switch (event.type) {
-      case SDLK_ESCAPE: running = false; break;
+      case SDLK_ESCAPE: running = false; goto exit;
       case SDLK_SPACE: paused = paused ? false : true; break;
       default: break;
       }
@@ -414,5 +414,6 @@ bool Chip::poll_events() {
       running = false;
   }
 
+  exit:
   return running;
 }

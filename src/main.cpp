@@ -1,6 +1,11 @@
 #include "chip/chip.h"
 #include "displayer/display.h"
-#include <memory>
+#include <chrono>
+#include <thread>
+
+void simulate_await_cycle() {
+  std::this_thread::sleep_for(std::chrono::milliseconds(CLOCK_CYCLE));
+}
 
 void init_emulation(std::string rom) {
   // Init chip and display
@@ -9,17 +14,20 @@ void init_emulation(std::string rom) {
 
   chip->load_rom(rom);
 
+  // Emulator loop
   loop {
     Opcode opcode = chip->fetch();
     chip->execute(opcode);
 
-    if(chip->screen_drawn())
+    if (chip->screen_drawn())
       display->draw(chip->screen());
 
     // if exit is pressed the emulation ends
-    if(!chip->poll_events())
+    if (!chip->poll_events())
       break;
-    }
+
+    simulate_await_cycle();
+  }
 
   std::cout << "Finish Emulation" << std::endl;
 }

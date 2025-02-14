@@ -1,3 +1,5 @@
+#pragma once
+
 #include <cstdlib>
 #include <cstdint>
 #include <fstream>
@@ -20,3 +22,4 @@
 typedef uint8_t byte;
 typedef uint16_t word;
 #define NUM_KEYS 16
+#define CLOCK_CYCLE 1000
