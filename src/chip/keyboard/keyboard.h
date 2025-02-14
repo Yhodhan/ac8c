@@ -1,5 +1,4 @@
-#ifndef KEY_H
-#define KEY_H
+#pragma once
 
 #include "../../utils.h"
 
@@ -12,4 +11,3 @@ class Input {
     private:
         std::array<bool, 0x10> keyboard = {0};
 };
-#endif

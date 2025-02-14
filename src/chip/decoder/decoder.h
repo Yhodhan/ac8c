@@ -1,5 +1,4 @@
-#ifndef DECODER_H
-#define DECODER_H
+#pragma once
 
 #include "../opcode/opcode.h"
 
@@ -42,5 +41,3 @@ enum class Instruction {
 };
 
 Instruction decode(Opcode opcode);
-
-#endif

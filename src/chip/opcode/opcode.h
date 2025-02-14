@@ -1,5 +1,4 @@
-#ifndef OPCODE_H
-#define OPCODE_H
+#pragma once
 
 #include "../../utils.h"
 
@@ -15,5 +14,3 @@ struct Opcode {
   uint8_t Byte();
   word address();
 };
-
-#endif

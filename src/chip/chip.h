@@ -1,5 +1,4 @@
-#ifndef CHIP_H
-#define CHIP_H
+#pragma once
 
 #include "../utils.h"
 #include "keyboard/keyboard.h"
@@ -91,5 +90,3 @@ private:
   byte key_pres_reg;
   Screen _screen;
 };
-
-#endif
