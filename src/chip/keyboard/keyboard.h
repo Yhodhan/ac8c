@@ -21,9 +21,9 @@ const static uint8_t KEYMAP[NUM_KEYS] = {
   SDLK_v  // F
 };
 
+
 class Input {
     public:
-
         bool is_pressed(byte key);
         void set_key(byte index, bool state);
 

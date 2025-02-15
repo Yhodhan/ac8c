@@ -15,8 +15,8 @@ else
 	LIBS= -lSDL2 -lSDL2_image
 endif
 
-CXXFLAGS = --std=c++20 -g -pipe -Wall -Wformat -Werror \
-		   -Wextra -Wuninitialized -Winit-self -Wmaybe-uninitialized -I.
+CXXFLAGS = --std=c++20 -pipe -Wall -Wformat -Werror \
+		   -Wextra -Wuninitialized -Winit-self -Wmaybe-uninitialized -O3 -I.
 
 # ===================
 #    TARGET RULES

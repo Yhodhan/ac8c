@@ -3,7 +3,7 @@
 #include <chrono>
 #include <thread>
 
-void simulate_await_cycle() {
+inline void simulate_await_cycle() {
   std::this_thread::sleep_for(std::chrono::milliseconds(CLOCK_CYCLE));
 }
 
